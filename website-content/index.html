@@ -1,0 +1,147 @@
+<!--
+  Static Job Portfolio - index.html
+  Now uses an external stylesheet (styles.css)
+  - To add your profile picture: replace the image inside <div class="avatar"> in the header.
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Jane Doe — Product Designer</title>
+  <meta name="description" content="Portfolio of Jane Doe — product designer focusing on UX, visual design and front-end development.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <!-- Replace the src below with your own profile picture URL or local file path (e.g. ./images/profile.jpg) -->
+        <div class="avatar" aria-hidden="true">
+          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=500&auto=format&fit=crop" alt="Your profile picture">
+        </div>
+        <div>
+          <h1>Jane Doe</h1>
+          <div class="subtitle">Product Designer • Front-end Developer</div>
+        </div>
+      </div>
+      <nav aria-label="primary">
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+        <a class="button" href="#contact">Hire me</a>
+      </nav>
+    </header>
+
+    <section class="hero card" aria-labelledby="intro">
+      <div>
+        <h2 id="intro">Designing products people love. Building them, too.</h2>
+        <p class="lead">I'm a product designer who specializes in end-to-end product experiences — research, UX, visual design and front-end implementation.
+        I craft interactive, accessible interfaces and work closely with engineering to ship delightful features.</p>
+
+        <div class="skills">
+          <div class="skill">Product Design</div>
+          <div class="skill">UX Research</div>
+          <div class="skill">React & HTML/CSS</div>
+          <div class="skill">Figma</div>
+          <div class="skill">Accessibility</div>
+        </div>
+
+        <div class="cta">
+          <a class="button" href="#projects">View projects</a>
+          <a href="/resume.pdf" class="muted-link">Download resume</a>
+        </div>
+      </div>
+
+      <aside class="sidebar">
+        <div class="card current-role">
+          <strong>Current</strong>
+          <div class="muted">Senior Product Designer at Acme Corp</div>
+        </div>
+        <div class="card contact-info">
+          <strong>Contact</strong>
+          <div class="muted">jane.doe@email.com</div>
+          <div class="muted">San Francisco, CA</div>
+        </div>
+      </aside>
+    </section>
+
+    <main>
+      <section id="about" class="card">
+        <h3>About</h3>
+        <p class="muted">I help teams turn uncertain problems into clear, beautiful experiences. My work sits at the intersection of product strategy, user research and front-end implementation. I enjoy leading design systems, mentoring junior designers and shipping production-quality UI.</p>
+      </section>
+
+      <section id="projects" class="card">
+        <h3>Selected projects</h3>
+        <div class="projects-grid">
+
+          <article class="project">
+            <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1200&auto=format&fit=crop" alt="Analytics dashboard screenshot">
+            <div class="meta">
+              <strong>Analytics Dashboard</strong>
+              <div class="muted small">Designing a data-dense dashboard for marketing teams — filters, visualizations and a component library.</div>
+              <div class="tags">
+                <span class="tag">Figma</span><span class="tag">React</span><span class="tag">Design Systems</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project">
+            <img src="https://images.unsplash.com/photo-1505685296765-3a2736de412f?q=80&w=1200&auto=format&fit=crop" alt="Mobile banking app screenshot">
+            <div class="meta">
+              <strong>Mobile Banking App</strong>
+              <div class="muted small">End-to-end UX for a payment flow — research, prototypes, accessibility improvements.</div>
+              <div class="tags"><span class="tag">Research</span><span class="tag">Prototyping</span></div>
+            </div>
+          </article>
+
+          <article class="project">
+            <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop" alt="E‑commerce redesign screenshot">
+            <div class="meta">
+              <strong>E‑commerce Redesign</strong>
+              <div class="muted small">Lifted conversion by focusing on checkout UX and performance improvements.</div>
+              <div class="tags"><span class="tag">Performance</span><span class="tag">A/B testing</span></div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <section id="contact" class="card">
+        <h3>Contact</h3>
+        <p class="muted">Interested in working together? Send a quick message — I usually reply within a few days.</p>
+        <form onsubmit="handleSubmit(event)">
+          <input type="text" id="name" name="name" placeholder="Your name" required>
+          <input type="email" id="email" name="email" placeholder="Your email" required>
+          <textarea id="message" name="message" rows="5" placeholder="Tell me about the project..." required></textarea>
+          <div class="form-actions">
+            <button type="submit">Send message</button>
+            <a class="muted-link" href="mailto:jane.doe@email.com">Or email me</a>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <div>© Jane Doe — Built with ❤️ — <a href="#" class="muted-link">Privacy</a></div>
+    </footer>
+  </div>
+
+  <script>
+    function handleSubmit(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const message = document.getElementById('message').value;
+      const subject = encodeURIComponent('Portfolio inquiry from ' + name);
+      const body = encodeURIComponent('Name: '+name+'\nEmail: '+email+'\n\n'+message);
+      location.href = `mailto:jane.doe@email.com?subject=${subject}&body=${body}`;
+    }
+  </script>
+</body>
+</html>
