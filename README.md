@@ -16,14 +16,14 @@ Terraform configuration for securely hosting a static website on AWS S3, featuri
 
 ## Overview
 
-This project provides Terraform code to provision a secure, production-ready static website hosting environment on AWS. It leverages S3 for storage, CloudFront for CDN and HTTPS, and IAM for secure access.
+This project provides Terraform code to provision a secure, production-ready static website hosting environment on AWS. It leverages S3 for storage and CloudFront for CDN and HTTPS. **Note:** This configuration assumes you already have an ACM certificate (for your domain) and a registered domain (e.g., from GoDaddy). IAM and Route 53 resources are not managed by this project.
 
 ## Architecture
 
 - **Amazon S3**: Stores static website files (HTML, CSS, JS, images).
 - **CloudFront**: Distributes content globally, provides HTTPS, and restricts direct S3 access.
-- **IAM**: Manages permissions for deployment automation.
-- **(Optional) Route 53**: For custom domain DNS management.
+- **(You provide) ACM Certificate**: For enabling HTTPS on your custom domain.
+- **(You provide) Domain Name**: Purchased from a registrar such as GoDaddy.
 
 ```
 [User] ---> [CloudFront CDN] ---> [S3 Bucket (private)]
@@ -34,21 +34,23 @@ This project provides Terraform code to provision a secure, production-ready sta
 - **Private S3 bucket**: Blocks all public access.
 - **CloudFront distribution**: Serves content securely over HTTPS.
 - **Automatic content deployment**: Uploads website files to S3.
-- **Configurable domain and SSL**: (Optional) Use your own domain and ACM certificate.
+- **Configurable domain and SSL**: Use your own domain and ACM certificate.
 - **Terraform-managed**: Infrastructure as code for easy reproducibility.
 
 ## Prerequisites
 
 - [Terraform](https://www.terraform.io/downloads.html) v1.0+
 - [AWS CLI](https://aws.amazon.com/cli/) configured with appropriate credentials
-- An AWS account with permissions to manage S3, CloudFront, and IAM
-- (Optional) Registered domain and ACM certificate for HTTPS
+- An AWS account with permissions to manage S3 and CloudFront
+- **Existing ACM certificate** in us-east-1 (for CloudFront) for your domain
+- **Registered domain name** (e.g., from GoDaddy)
+- (Optional) DNS configuration at your registrar to point your domain to the CloudFront distribution
 
 ## Usage
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/static-website-with-s3-infrastructure.git
+   git clone https://github.com/imb7/static-website-with-s3-infrastructure.git
    cd static-website-with-s3-infrastructure
    ```
 
@@ -90,8 +92,8 @@ Customize variables in `variables.tf` or via `terraform.tfvars`:
 
 - `bucket_name`: Name of your S3 bucket
 - `region`: AWS region
-- `domain_name`: (Optional) Custom domain
-- `acm_certificate_arn`: (Optional) ACM certificate ARN for HTTPS
+- `domain_name`: Your custom domain (must match your ACM certificate)
+- `acm_certificate_arn`: ACM certificate ARN for HTTPS (must be in us-east-1 for CloudFront)
 
 ## Deployment
 
