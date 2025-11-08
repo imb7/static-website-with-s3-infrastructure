@@ -8,9 +8,12 @@ Terraform configuration for securely hosting a static website on AWS S3, featuri
 - [Architecture](#architecture)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
+- [Project Structure](#project-structure)
 - [Customization](#customization)
 - [Usage](#usage)
+- [Website Content Updates](#website-content-updates)
 - [Configuration](#configuration)
+- [Terraform Outputs](#terraform-outputs)
 - [Deployment](#deployment)
 - [Cleanup](#cleanup)
 - [Troubleshooting](#troubleshooting)
@@ -54,6 +57,28 @@ IAM and Route 53 resources are **not** managed by this project.
 - **Existing ACM certificate** in `us-east-1` for your domain
 - **Registered domain name** (e.g., from GoDaddy)
 - Ability to update DNS records at your registrar
+
+## Project Structure
+
+```
+.
+├── environments/
+│   └── dev/                    # Development environment configuration
+│       ├── main.tf            # Main Terraform configuration
+│       ├── variables.tf       # Variable definitions
+│       ├── terraform.tfvars   # Variable values
+│       ├── tf-outputs.json    # Terraform outputs in JSON format
+│       └── versions.tf        # Provider and version constraints
+├── modules/
+│   ├── bucket_policy/         # S3 bucket policy module
+│   ├── cloudfront_distribution/# CloudFront distribution module
+│   └── s3_bucket/            # S3 bucket configuration module
+├── website-content/           # Static website files
+│   ├── index.html
+│   ├── 404.html
+│   └── styles.css
+└── README.md
+```
 
 ## Customization
 
@@ -100,11 +125,8 @@ Before deploying, you **must** update the following values to match your environ
    - Confirm the action when prompted.
 
 6. **Deploy your website content:**
-   - Place your static site files in your chosen directory (e.g., `./site`).
-   - Upload files to S3:
-     ```bash
-     aws s3 sync ./site/ s3://<your-bucket-name>/
-     ```
+   - Initial deployment is handled automatically by Terraform using the files in the `website-content` directory
+   - For subsequent updates, see the [Website Content Updates](#website-content-updates) section
 
 7. **Update DNS records:**
    - After Terraform completes, note the CloudFront distribution domain name (e.g., `dxxxxxxx.cloudfront.net`).
@@ -113,20 +135,98 @@ Before deploying, you **must** update the following values to match your environ
 8. **Access your website:**
    - Visit your custom domain in a browser to verify deployment.
 
+## Website Content Updates
+
+While the initial website content is deployed automatically by Terraform, subsequent updates can be easily managed using AWS CLI commands. This approach is simple and efficient - no need for complex tools like Ansible which would be overkill for this purpose.
+
+### Updating Website Files
+
+1. **Sync updated files to S3:**
+   ```bash
+   # Replace YOUR_BUCKET_NAME with your actual bucket name from tf-outputs.json
+   aws s3 sync ./website-content/ s3://YOUR_BUCKET_NAME/ --delete
+   ```
+   - The `--delete` flag removes files in the bucket that don't exist locally
+   - Remove `--delete` if you want to keep existing files in the bucket
+
+2. **Invalidate CloudFront cache:**
+   ```bash
+   # Replace DISTRIBUTION_ID with your CloudFront distribution ID from tf-outputs.json
+   aws cloudfront create-invalidation --distribution-id DISTRIBUTION_ID --paths "/*"
+   ```
+
+### Best Practices for Updates
+
+- Always test your changes locally before uploading
+- Use `aws s3 sync --dryrun` to preview changes before applying
+- Consider creating a simple shell script for frequent updates:
+  ```bash
+  #!/bin/bash
+  BUCKET_NAME="your-bucket-name"
+  DISTRIBUTION_ID="your-distribution-id"
+  
+  aws s3 sync ./website-content/ s3://$BUCKET_NAME/ --delete
+  aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+  ```
+
+Note: While tools like Ansible could be used for this purpose, they would add unnecessary complexity for such a straightforward task. The AWS CLI provides all the functionality needed for efficient website updates and cache management.
+
 ## Configuration
 
 Variables can be set in `terraform.tfvars`, via CLI flags, or environment variables.  
 Key variables:
 
-- `bucket_name`: S3 bucket name (must be unique)
+- `project_name`: Name of your project (used in resource naming)
+- `environment_name`: Environment name (e.g., dev, prod)
+- `owner`: Owner name or identifier
 - `region`: AWS region for S3 bucket
 - `domain_name`: Your custom domain (must match ACM certificate)
 - `acm_certificate_arn`: ACM certificate ARN (must be in `us-east-1`)
 
+The S3 bucket name is automatically generated using the pattern:
+```
+${var.project_name}-${var.environment_name}-${var.owner}-bucket
+```
+
+## Terraform Outputs
+
+After applying the Terraform configuration, outputs are automatically saved to `environments/dev/tf-outputs.json`. This file contains important information including:
+
+1. CloudFront distribution domain name (needed for DNS configuration)
+2. S3 bucket details
+3. Other resource identifiers
+
+To manually generate or update the outputs file in JSON format:
+```bash
+cd environments/dev
+# Generate full JSON output
+terraform output -json > tf-outputs.json
+
+# Get just the CloudFront domain name in raw format (useful for scripts)
+terraform output -json distribution_domain_name | jq -r .value
+```
+
+The JSON output will include all values in a structured format. For example:
+```json
+{
+  "distribution_domain_name": {
+    "value": "dxxxxxxx.cloudfront.net",
+    "type": "string"
+  },
+  "s3_bucket_name": {
+    "value": "your-bucket-name",
+    "type": "string"
+  }
+}
+```
+
+Use the CloudFront domain name from this file to configure your DNS records at your domain registrar (e.g., GoDaddy). See [godaddy_dns_instructions.md](godaddy_dns_instructions.md) for detailed DNS setup steps.
+
 ## Deployment
 
 - All infrastructure resources are managed by Terraform.
-- To update website content, re-sync files to S3.
+- Initial website content is deployed automatically from the `website-content` directory.
+- For subsequent content updates, use the AWS CLI commands as described in [Website Content Updates](#website-content-updates).
 - To update infrastructure, modify Terraform code or variables and re-apply.
 
 ## Cleanup

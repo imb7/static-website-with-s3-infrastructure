@@ -1,7 +1,9 @@
 # static_wbsite/environments/dev/variables.tf
 # Terraform variables for the development environment
 
-# s3 bucket related variables
+###############################
+# s3 bucket related variables #
+###############################
 variable "noncurrent_days" {
   description = "days after which noncurrent versions are deleted"
   type        = number
@@ -15,7 +17,9 @@ variable "website_content_path" {
 }
 
 
-# cloudfront related variables
+################################
+# cloudfront related variables #
+################################
 variable "acm_certificate_arn" {
   description = "ARN of the ACM certificate for CloudFront"
   type        = string
@@ -27,7 +31,9 @@ variable "my_domain_names" {
 }
 
 
-# provider related variables
+##############################
+# provider related variables #
+##############################
 variable "region" {
   description = "The AWS region to deploy resources in"
   type        = string
@@ -37,13 +43,13 @@ variable "region" {
 variable "project_name" {
   description = "The name of the project"
   type        = string
-  default     = "StaticWebsiteHosting"
+  default     = "static-website"
 }
 
 variable "owner" {
   description = "The owner of the resources"
   type        = string
-  default     = "Ibrahim"
+  default     = "owner-name" # replace with resource owner name
 }
 
 variable "environment_name" {
