@@ -1,4 +1,5 @@
 # creates policy document to allow cloudfront to access s3 bucket
+
 data "aws_iam_policy_document" "allow_cloudfront" {
   statement {
     effect = "Allow"

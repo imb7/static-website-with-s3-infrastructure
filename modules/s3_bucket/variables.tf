@@ -1,3 +1,6 @@
+# modules/s3_bucket/variables.tf
+# Terraform module variables for S3 bucket configuration
+
 # Values will be retrieved from variables defined in root modules terraform.tfvars
 variable "bucket_name" {
   description = "The name of the S3 bucket"

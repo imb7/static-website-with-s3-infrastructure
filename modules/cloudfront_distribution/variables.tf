@@ -1,3 +1,6 @@
+# modules/cloudfront_distribution/variables.tf
+# Terraform variables for CloudFront Distribution module
+
 # Value will be retrieved from output of s3_bucket module => root module's module composition
 variable "bucket_regional_domain_name" {
   description = "Regional domain name of the S3 bucket"

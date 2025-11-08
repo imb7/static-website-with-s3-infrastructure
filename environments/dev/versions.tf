@@ -1,3 +1,6 @@
+# static_wbsite/environments/dev/versions.tf
+# Terraform version and provider requirements for the development environment
+
 terraform {
   required_version = ">= 1.13.0, < 2.0.0"
   required_providers {
