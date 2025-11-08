@@ -1,3 +1,6 @@
+# Terraform AWS Provider Configuration for Development Environment
+# This file sets up the AWS provider with the necessary region and default tags
+
 provider "aws" {
   region = var.region # replace with specific region you want
 

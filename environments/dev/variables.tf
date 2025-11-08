@@ -1,11 +1,7 @@
 # static_wbsite/environments/dev/variables.tf
+# Terraform variables for the development environment
 
 # s3 bucket related variables
-variable "bucket_name" {
-  description = "The name of the S3 bucket"
-  type        = string
-}
-
 variable "noncurrent_days" {
   description = "days after which noncurrent versions are deleted"
   type        = number
@@ -47,7 +43,7 @@ variable "project_name" {
 variable "owner" {
   description = "The owner of the resources"
   type        = string
-  default     = "Ibrahim Bagwan"
+  default     = "Ibrahim"
 }
 
 variable "environment_name" {

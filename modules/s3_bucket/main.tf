@@ -1,9 +1,12 @@
+# Terraform module to create an S3 bucket for static website hosting with versioning, encryption, and lifecycle policies.
+
+# Create S3 bucket for static website hosting
 resource "aws_s3_bucket" "static_website_bucket" {
   bucket        = var.bucket_name
   force_destroy = true
 }
 
-
+# Configure the bucket for static website hosting
 resource "aws_s3_bucket_public_access_block" "remote_state_public_access" {
   bucket = aws_s3_bucket.static_website_bucket.id
 
@@ -13,7 +16,7 @@ resource "aws_s3_bucket_public_access_block" "remote_state_public_access" {
   restrict_public_buckets = true
 }
 
-
+# Enable server-side encryption using AES256
 resource "aws_s3_bucket_server_side_encryption_configuration" "remote_state_encryption" {
   bucket = aws_s3_bucket.static_website_bucket.id
   rule {
@@ -23,7 +26,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "remote_state_encr
   }
 }
 
-
+# Enable versioning on the S3 bucket
 resource "aws_s3_bucket_versioning" "remote_state_versioning" {
   bucket = aws_s3_bucket.static_website_bucket.id
   versioning_configuration {
@@ -31,7 +34,7 @@ resource "aws_s3_bucket_versioning" "remote_state_versioning" {
   }
 }
 
-
+# Set lifecycle policies to manage noncurrent versions and expired object delete markers
 resource "aws_s3_bucket_lifecycle_configuration" "remote_state_lifecycle" {
   bucket = aws_s3_bucket.static_website_bucket.id
 
@@ -52,6 +55,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "remote_state_lifecycle" {
 }
 
 # Define a mapping of file extensions to content types
+# This will be used to set the correct Content-Type metadata for each uploaded object.
 locals {
   content_type = {
     "html" = "text/html",
@@ -64,8 +68,8 @@ locals {
   }
 }
 
-#Adding bucket object
-
+# Adding bucket object
+# Upload website files to the S3 bucket with appropriate content types
 resource "aws_s3_object" "website_files" {
   for_each = fileset(var.website_content_path, "**")
   

@@ -1,5 +1,7 @@
 # modules/cloudfront_distribution/main.tf
+# Terraform configuration for AWS CloudFront Distribution for a static website hosted on S3
 
+# CloudFront Origin Access Control for S3 Bucket
 resource "aws_cloudfront_origin_access_control" "oac_s3_bucket" {
   name                              = "static-website-oac"
   description                       = "OAC for static website S3 bucket"
@@ -7,7 +9,7 @@ resource "aws_cloudfront_origin_access_control" "oac_s3_bucket" {
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
 }
-
+# CloudFront Distribution Resource
 resource "aws_cloudfront_distribution" "static_website_cdn" {
   enabled             = true
   is_ipv6_enabled     = true
@@ -59,7 +61,7 @@ resource "aws_cloudfront_distribution" "static_website_cdn" {
     error_caching_min_ttl = 300
   }
 
-
+  # Geo restriction configuration (none in this case)
   restrictions {
     geo_restriction {
       restriction_type = "none"
