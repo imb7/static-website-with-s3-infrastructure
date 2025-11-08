@@ -2,10 +2,30 @@
 
 This guide helps you configure your GoDaddy DNS settings to point your domain to your AWS CloudFront distribution.
 
+## Getting Your CloudFront Domain Name
+
+1. **Navigate to your environment directory:**
+   ```bash
+   cd environments/dev
+   ```
+
+2. **Get the CloudFront domain name from Terraform outputs:**
+   ```bash
+   # Option 1: View all outputs in JSON format
+   terraform output -json > tf-outputs.json
+   
+   # Option 2: Get just the CloudFront domain name
+   terraform output -json distribution_domain_name | jq -r .value
+   ```
+
+   The command will output something like: `dxxxxxxx.cloudfront.net`
+
+3. **Save this domain name for the next steps**
+
 ## Prerequisites
 
-- You have completed Terraform deployment and have your CloudFront distribution domain (e.g., `dxxxxxxx.cloudfront.net`).
-- You have access to your GoDaddy account and domain.
+- You have completed Terraform deployment and retrieved your CloudFront distribution domain from the steps above
+- You have access to your GoDaddy account and domain
 
 ## Steps
 
@@ -36,9 +56,16 @@ This guide helps you configure your GoDaddy DNS settings to point your domain to
 
 ## Example
 
+Using the CloudFront domain from your `tf-outputs.json`:
+
 | Type   | Name | Value                        | TTL    |
 |--------|------|-----------------------------|--------|
 | CNAME  | www  | dxxxxxxx.cloudfront.net     | 1 hour |
+
+You can quickly get your domain name for copying with:
+```bash
+terraform output -json distribution_domain_name | jq -r .value
+```
 
 ## Notes
 
