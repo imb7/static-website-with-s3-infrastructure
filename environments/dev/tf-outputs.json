@@ -1,0 +1,12 @@
+{
+  "distribution_domain_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "d26eb8slr88pmi.cloudfront.net"
+  },
+  "s3_bucket_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "static-website-dev-owner-name-bucket"
+  }
+}

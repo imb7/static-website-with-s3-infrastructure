@@ -1,5 +1,4 @@
 # Main Terraform configuration for the development environment
-
 # This file orchestrates the deployment of S3 bucket, CloudFront distribution,
 # and the associated bucket policy by utilizing respective modules.
 
@@ -12,6 +11,7 @@ module "s3_bucket" {
   noncurrent_days      = var.noncurrent_days
   website_content_path = var.website_content_path
 }
+
 
 # Import CloudFront distribution module
 module "cloudfront_distribution" {
@@ -26,6 +26,7 @@ module "cloudfront_distribution" {
   bucket_arn                  = module.s3_bucket.bucket_arn
   bucket_id                   = module.s3_bucket.bucket_id
 }
+
 
 # Import Bucket Policy module
 module "bucket_policy" {

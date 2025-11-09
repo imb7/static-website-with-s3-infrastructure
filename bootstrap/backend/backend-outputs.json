@@ -1,0 +1,12 @@
+{
+  "s3_bucket_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "yourprojectname-dev-ibrahim-remote-backend"
+  },
+  "s3_bucket_region": {
+    "sensitive": false,
+    "type": "string",
+    "value": "us-east-1"
+  }
+}

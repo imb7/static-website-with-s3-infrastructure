@@ -62,12 +62,15 @@ IAM and Route 53 resources are **not** managed by this project.
 
 ```
 .
+├── bootstrap/
+│   └── backend/               # Remote backend module and state
+│       └── backend-outputs.json # Backend outputs (s3_bucket_name, s3_bucket_region)
 ├── environments/
 │   └── dev/                    # Development environment configuration
 │       ├── main.tf            # Main Terraform configuration
 │       ├── variables.tf       # Variable definitions
 │       ├── terraform.tfvars   # Variable values
-│       ├── tf-outputs.json    # Terraform outputs in JSON format
+│       ├── tf-outputs.json    # Environment Terraform outputs in JSON format
 │       └── versions.tf        # Provider and version constraints
 ├── modules/
 │   ├── bucket_policy/         # S3 bucket policy module
@@ -154,7 +157,7 @@ While the initial website content is deployed automatically by Terraform, subseq
 
 1. **Sync updated files to S3:**
    ```bash
-   # Replace YOUR_BUCKET_NAME with your actual bucket name from tf-outputs.json
+   # Replace YOUR_BUCKET_NAME with your actual bucket name from bootstrap/backend/backend-outputs.json
    aws s3 sync ./website-content/ s3://YOUR_BUCKET_NAME/ --delete
    ```
    - The `--delete` flag removes files in the bucket that don't exist locally
@@ -162,7 +165,7 @@ While the initial website content is deployed automatically by Terraform, subseq
 
 2. **Invalidate CloudFront cache:**
    ```bash
-   # Replace DISTRIBUTION_ID with your CloudFront distribution ID from tf-outputs.json
+   # Replace DISTRIBUTION_ID with your CloudFront distribution ID (from environments/<env>/tf-outputs.json)
    aws cloudfront create-invalidation --distribution-id DISTRIBUTION_ID --paths "/*"
    ```
 
@@ -199,41 +202,55 @@ The S3 bucket name is automatically generated using the pattern:
 ${var.project_name}-${var.environment_name}-${var.owner}-bucket
 ```
 
+## Remote backend
+
+This repository includes a prebuilt remote backend configuration in `bootstrap/backend/` that provisions a shared S3 bucket for Terraform remote state. For setup and usage instructions, see `backend_instructions.md` in the repository root.
+
+
 ## Terraform Outputs
 
-After applying the Terraform configuration, outputs are not saved to a file automatically. To export the outputs to JSON (for example `environments/dev/tf-outputs.json`) run the following in your environment directory once `terraform apply` has completed successfully and state is available:
+After applying the Terraform configuration, outputs are not saved to a file automatically. There are two kinds of outputs you may want to export:
+
+- Backend outputs (S3 bucket and region) — create the backend first from `bootstrap/backend`, then export outputs there:
+
+```bash
+cd bootstrap/backend
+# Export backend outputs to the canonical file used by this repo
+terraform output -json > backend-outputs.json
+```
+
+- Environment outputs (CloudFront distribution, etc.) — export from the environment directory after applying the environment:
 
 ```bash
 cd environments/dev
-# Export all outputs to JSON
 terraform output -json > tf-outputs.json
 
 # (Optional) Get just the CloudFront domain name (useful for scripts)
 terraform output -json distribution_domain_name | jq -r .value > cloudfront-domain.txt
 ```
 
-If you prefer a single chained command, you can run apply and then export outputs in one line (careful with automation and approvals):
+If you prefer a single chained command for environment apply + export, you can run apply and then export outputs in one line (careful with automation and approvals):
 
 ```bash
-# Run apply non-interactively and export outputs to tf-outputs.json
+# Run apply non-interactively and export environment outputs to tf-outputs.json
 terraform apply -auto-approve && terraform output -json > tf-outputs.json
 ```
 
-The `tf-outputs.json` file will contain structured output entries. Example excerpt:
+Backend and environment output files will contain structured output entries. Example excerpt (environment outputs):
 ```json
 {
-  "distribution_domain_name": {
-    "value": "dxxxxxxx.cloudfront.net",
-    "type": "string"
-  },
-  "s3_bucket_name": {
-    "value": "your-bucket-name",
-    "type": "string"
-  }
+   "distribution_domain_name": {
+      "value": "dxxxxxxx.cloudfront.net",
+      "type": "string"
+   },
+   "s3_bucket_name": {
+      "value": "your-bucket-name",
+      "type": "string"
+   }
 }
 ```
 
-Use the CloudFront domain name from this file to configure your DNS records at your domain registrar (e.g., GoDaddy). See [godaddy_dns_instructions.md](godaddy_dns_instructions.md) for detailed DNS setup steps.
+Use the CloudFront domain name from the environment outputs file to configure your DNS records at your domain registrar (e.g., GoDaddy). See [godaddy_dns_instructions.md](godaddy_dns_instructions.md) for detailed DNS setup steps.
 
 ## Deployment
 
