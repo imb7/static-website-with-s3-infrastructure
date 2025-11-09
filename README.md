@@ -201,23 +201,25 @@ ${var.project_name}-${var.environment_name}-${var.owner}-bucket
 
 ## Terraform Outputs
 
-After applying the Terraform configuration, outputs are automatically saved to `environments/dev/tf-outputs.json`. This file contains important information including:
+After applying the Terraform configuration, outputs are not saved to a file automatically. To export the outputs to JSON (for example `environments/dev/tf-outputs.json`) run the following in your environment directory once `terraform apply` has completed successfully and state is available:
 
-1. CloudFront distribution domain name (needed for DNS configuration)
-2. S3 bucket details
-3. Other resource identifiers
-
-To manually generate or update the outputs file in JSON format:
 ```bash
 cd environments/dev
-# Generate full JSON output
+# Export all outputs to JSON
 terraform output -json > tf-outputs.json
 
-# Get just the CloudFront domain name in raw format (useful for scripts)
-terraform output -json distribution_domain_name | jq -r .value
+# (Optional) Get just the CloudFront domain name (useful for scripts)
+terraform output -json distribution_domain_name | jq -r .value > cloudfront-domain.txt
 ```
 
-The JSON output will include all values in a structured format. For example:
+If you prefer a single chained command, you can run apply and then export outputs in one line (careful with automation and approvals):
+
+```bash
+# Run apply non-interactively and export outputs to tf-outputs.json
+terraform apply -auto-approve && terraform output -json > tf-outputs.json
+```
+
+The `tf-outputs.json` file will contain structured output entries. Example excerpt:
 ```json
 {
   "distribution_domain_name": {
