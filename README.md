@@ -37,9 +37,7 @@ IAM and Route 53 resources are **not** managed by this project.
 - **Domain Name**: You provide a registered domain (e.g., from GoDaddy).
 - **DNS**: You must manually configure your DNS provider to point your domain to the CloudFront distribution.
 
-```
-[User] ---> [CloudFront CDN] ---> [S3 Bucket (private)]
-```
+![architecture](./images/architectural-diagram.png "aws architectural diagram")
 
 ## Features
 
